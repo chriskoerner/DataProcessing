@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
+
+"""Encodes tables"""
+
 __author__ = 'Christian Körner'
 
 import argparse
 import csv
 
 def main():
+    """main method"""
     parser = argparse.ArgumentParser(description='Encode table to ints. Key lookups are written in utility files dimX')
 
     parser.add_argument('file_name', metavar='file', type=str,
@@ -40,6 +44,7 @@ def main():
             output_row.append(id)
         fact_file.write(' '.join(output_row) + '\n')
 
+    # writing out the dictionaries
     for counter in range(len(dimension_dicts)):
         the_dict = dimension_dicts[counter]
 
@@ -54,6 +59,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-  
+    
