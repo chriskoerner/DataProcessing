@@ -6,10 +6,10 @@ __author__ = 'Christian Körner'
 
 import math
 
-def calc_conditional_entropy(occurrence_counter):
+def calc_conditional_entropy(occurrence_counter, resources):
     """returns the conditional entropy of a given counter dict"""
 
-    total_assignments_number = sum(occurrence_counter.values())
+    total_assignments_number = resources
     doc_freq_list = [float(i) for i in occurrence_counter.values()]
 
     H = 0.0
