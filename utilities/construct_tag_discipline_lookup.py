@@ -46,8 +46,12 @@ for line in profile_file:
         continue
 
     id = line[0]
-    academic_status = line[1]
-    discipline = line[2]
+
+    try:
+        academic_status = int(line[1])
+        discipline = int(line[2])
+    except ValueError:
+        continue
 
     user_to_profession_discipline_lookup[id] = (academic_status, discipline)
 
@@ -63,7 +67,7 @@ for line in tagging_file:
         continue
 
     user = line[0]
-    tag = line[1]
+    tag =  line[1]
 
     #if user not in profiles --> skip
     if user not in user_to_profession_discipline_lookup:
@@ -77,7 +81,7 @@ for line in tagging_file:
         
         discipline_dict.clear()
 
-    discipline = user_to_profession_discipline_lookup[user][1]
+    discipline = int(user_to_profession_discipline_lookup[user][1])
 
     #ugly and speedy
     try:

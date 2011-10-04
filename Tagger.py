@@ -104,5 +104,3 @@ if __name__ == '__main__':
     print "tags:", TAGGER.get_tags()
     print "resources:", TAGGER.get_resources()
     print TAGGER.get_tas_number()
-    #print TAGGER.get_tags_and_occurence()
-    

@@ -22,6 +22,7 @@ __author__ = 'Christian Körner'
 import argparse
 import csv
 import logging
+import json
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -29,7 +30,7 @@ logger = logging.getLogger('tcpserver')
 logger.setLevel(logging.INFO)
 
 
-def tagger_analysis():
+def tagger_analysis(hasHeader = False):
     """analyses folksonomies"""
     parser = argparse.ArgumentParser(description='Program to output tagger analysis statistics')
     parser.add_argument("folksonomy_file", nargs='?', type=argparse.FileType())
@@ -45,6 +46,8 @@ def tagger_analysis():
     old_user = ""
     tas_list = []
 
+    
+
     for line in csv.reader(args.folksonomy_file, delimiter = args.d):
         user = line[args.u]
         resource = line[args.r]
@@ -54,7 +57,8 @@ def tagger_analysis():
             tagger = Tagger(old_user)
             tagger.add_tas(tas_list)
 
-            print tagger.name + "\t" + str(tagger.get_tags_and_occurence())
+            print tagger.name + "\t" + json.dumps(tagger.get_tags_and_occurence()) + "\t" + str(len(tagger.get_resources())) \
+                + "\t" + str(len(tagger.get_tags()))
             
             del tas_list[:]
 

@@ -21,6 +21,7 @@ for line in open(the_file_name):
     #    print 'processed %s lines', line_number
 
     line = line.strip()
+    line = line.lower()
     split_line = line.split("\t")
 
     tags = "\t".join(split_line[column - 1:])
