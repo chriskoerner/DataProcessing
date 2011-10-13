@@ -1,6 +1,8 @@
 """
 removes duplicate lines in network files as well as self references for our project
 
+awk -F $'\t' '{ if ($7 == "false") print $0 }' is another way to do this
+
 ATTENTION: only use if you know what you are doing ;)
 """
 

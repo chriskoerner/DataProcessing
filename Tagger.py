@@ -11,13 +11,16 @@ class Tagger():
     Class for taggers
     """
 
-    def __init__(self, username = None):
+    def __init__(self, username = None, tas_list = None):
         """
         Constructor
         """
         self.name = username
         self.tag_res_map = dict()
         self.res_tag_map = dict()
+
+        if tas_list is not None:
+            self.add_tas(tas_list)
         
         
     def set_name(self, the_name):
@@ -71,15 +74,14 @@ class Tagger():
         """returns the tags of the user"""
         return self.tag_res_map.keys()
     
-    def get_tags_and_occurence(self):
+    def get_tags_and_occurrences(self):
         """returns a dict of tags and their occurences"""
-        tag_occurence_lookup = dict()
+        tag_occurrence_lookup = dict()
         
-            
         for tag, resources in self.tag_res_map.iteritems():
-            tag_occurence_lookup[tag] = len(resources)
+            tag_occurrence_lookup[tag] = len(resources)
             
-        return tag_occurence_lookup
+        return tag_occurrence_lookup
 
     def add_tas(self, tas_list):
         """adds a list of tas to the user information"""

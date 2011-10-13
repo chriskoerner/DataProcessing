@@ -4,6 +4,7 @@
 utilities for dicts
 """
 import copy
+import csv
 
 __author__ = 'Christian Körner'
 
@@ -32,4 +33,18 @@ def mergeCounters(first_counter, second_counter):
             result_counter[key] = value
 
     return result_counter
-        
+
+def readCsvIntoDict(the_file, delimiter = "\t"):
+    """
+    reads a csv into a dict and returns it
+    """
+
+    csv_reader = csv.reader(the_file, delimiter = delimiter)
+
+    result_dict = {}
+
+    for line in csv_reader:
+
+        result_dict[line[0]] = line[1:]
+
+    return result_dict
