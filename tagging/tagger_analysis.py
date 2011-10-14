@@ -12,7 +12,7 @@ IMPORTANT: Each user can annotate each document only once with a tag
 
 __author__ = 'Christian Körner'
 
-from Tagger import Tagger
+from tagging.Tagger import Tagger
 
 
 
