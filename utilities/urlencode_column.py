@@ -1,28 +1,28 @@
 """
 encode a column of a csv file with url
 """
-
-
-import sys
+import argparse
 import urllib
 
 
-#todo: parameterize the column to encode
 
-the_file_name = sys.argv[1]
-column = int(sys.argv[2])
+parser = argparse.ArgumentParser(description='urlencode column of file')
+parser.add_argument("file_to_urlencode", nargs='?', type=argparse.FileType())
+parser.add_argument("-c", help="index of the column to encode. 1based", type=int, metavar="column", required=True)
+parser.add_argument("-d", help="the delimiter of the csv", type=str, metavar="delimiter", default='\t')
+
+args = parser.parse_args()
+
+the_file_name = args.file_to_urlencode
+column = args.c
 
 line_number = 0
 
-for line in open(the_file_name):
+for line in the_file_name:
     line_number += 1
 
-    #if not line_number % 1000000:
-    #    print 'processed %s lines', line_number
-
     line = line.strip()
-    line = line.lower()
-    split_line = line.split("\t")
+    split_line = line.split(args.d)
 
     tags = "\t".join(split_line[column - 1:])
 

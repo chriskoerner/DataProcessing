@@ -12,7 +12,6 @@ import lucene
 import logging
 import math
 
-
 from lucene import Version, Document, SimpleFSDirectory, Term
 
 FORMAT = '%(asctime)-15s %(funcName)s %(message)s'
@@ -100,7 +99,7 @@ class LuceneIndexer:
         logger.info("%s KeyErrors in the lookup" % key_errors)
         
         reader.close()
-        #
+
 
 
 def lucene_experiment():
@@ -113,16 +112,9 @@ def lucene_experiment():
     lucene.initVM()
     lucene_indexer = LuceneIndexer("index", lucene.WhitespaceAnalyzer(Version.LUCENE_CURRENT))
     tagger_analysis(analysis_function=lucene_indexer.index_user)
-
     logging.info("done reading users")
-
     lucene_indexer.optimize_and_close()
-
     lucene_indexer.computeTFIDF()
-
-
-
-
 
 
 if __name__ == "__main__":
