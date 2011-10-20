@@ -90,8 +90,10 @@ class LuceneIndexer:
         while terms.next():
             x = terms.term()
 
+            docFreq = reader.docFreq(x)
+
             try:
-                print "%s\t%s" % (x.text(), self.global_occs[x.text()] *  math.log(numDocs / float(self.global_occs[x.text()])))
+                print "%s\t%s" % (x.text(), self.global_occs[x.text()] *  math.log(numDocs / (1.0 + float(docFreq))))
             except KeyError:
                 logger.warning("could not find tag %s in global tag lookup" % x.text())
                 key_errors += 1

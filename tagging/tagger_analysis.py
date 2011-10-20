@@ -28,11 +28,10 @@ logger.setLevel(logging.INFO)
 
 
 
-
 def tagger_analysis(hasHeader = False, analysis_function = None, user_limit = None):
     """analyses folksonomies"""
     parser = argparse.ArgumentParser(description='Program to output tagger analysis statistics')
-    parser.add_argument("folksonomy_file", nargs='?', type=argparse.FileType(), required = True)
+    parser.add_argument("folksonomy_file", nargs='?', type=argparse.FileType())
     parser.add_argument("-u", help="index of the user column", type=int, metavar="user_column", required=True)
     parser.add_argument("-r", help="index of the resource column", type=int, metavar="resource_column", required=True)
     parser.add_argument("-t", help="index of the tag column", type=int, metavar="tag_column", required=True)
