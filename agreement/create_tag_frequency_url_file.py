@@ -17,6 +17,7 @@ import xml.dom.minidom
 import operator
 from collections import Counter
 import pickle
+import IPython
 
 
 import os.path
@@ -55,7 +56,7 @@ class AgreementCalculator():
         
         dom = xml.dom.minidom.parse(tagger_file_name)
 
-        logger.info("collecting URLs from %s" % tagger_file_name)
+        #logger.info("collecting URLs from %s" % tagger_file_name)
 
         for tag_app in dom.getElementsByTagName("tag_application"):
             url = tag_app.getElementsByTagName("uri")[0].firstChild.toxml()
@@ -129,16 +130,34 @@ def transformList(the_list, threshold):
 
     return result_list
 
+def calculateWinnings(describer_dict, categorizer_dict, winningThreshold = 0.5):
+    """
+
+    """
+    if set(describer_dict.keys()) != set(categorizer_dict.keys()):
+        sys.exit("The dicts do not contain the same keys")
+
+    desc_wins = 0
+    cat_wins = 0
+    ties = 0
+
+    for key, occ_and_freqs in describer_dict.iteritems():
+        transformed_describer_list = transformList(occ_and_freqs[1], winningThreshold)
+
+        transformed_categorizer_list = transformList(categorizer_dict[key][1], winningThreshold)
+
+        print sum(transformed_describer_list) + " " + sum(transformed_categorizer_list)
+
+        
 
 def agreement_calculation(threshold = 0.5,
-                          number_of_taggers = 1000000,
+                          taggers_to_inspect = 1000000,
                           considerTopXUrls = 1000,
                           winningTreshold = 0.5):
     """
     agreement calculation
     """
-    pickle.load(open("ARG.pkl"))
-
+    
 
     parser = argparse.ArgumentParser(description='Program to calculate tagger agreement')
 
@@ -169,7 +188,7 @@ def agreement_calculation(threshold = 0.5,
 
         analyzed_taggers += 1
 
-        if analyzed_taggers >= number_of_taggers:
+        if analyzed_taggers >= taggers_to_inspect:
             break
 
     pickle.dump(agr_calculator, open("pickles/agreement_calculator.pkl","w"))
@@ -181,7 +200,7 @@ def agreement_calculation(threshold = 0.5,
 
     tagger_measure_lookup = {}
 
-    for line in csv.reader(open("data/cat_desc/delicious_statistics_name_and_combined.csv"), delimiter = '\t'):
+    for line in csv.reader(open("../data/cat_desc/delicious_statistics_name_and_combined.csv"), delimiter = '\t'):
         tagger_measure_lookup[line[0]] = float(line[1])
 
     behavior_counter = Counter()
@@ -210,7 +229,7 @@ def agreement_calculation(threshold = 0.5,
             agr_calculator.registerCategorizer(tagger_file)
 
         analyzed_taggers += 1
-        if analyzed_taggers >= number_of_taggers:
+        if analyzed_taggers >= taggers_to_inspect:
             break
 
 
@@ -226,9 +245,12 @@ def agreement_calculation(threshold = 0.5,
 
     number_of_included_urls = 0
 
-    categorizer_wins = 0
-    describer_wins = 0
-    ties = 0
+    #categorizer_wins = 0
+    #describer_wins = 0
+    #ties = 0
+
+    cat_url_to_occ_and_tagfreq = {}
+    desc_url_to_occ_and_tagfreq = {}
 
     for url in [url for url, frequency in urls_reverse_sorted_by_frequency]:
         
@@ -250,6 +272,7 @@ def agreement_calculation(threshold = 0.5,
                                             [float(x) / agr_calculator.describer_url_freq_counter[url] for x
                                              in agr_calculator.describer_url_tag_counter_dict[url].values() ])
 
+        
 #        if sum(transformedListCats) > sum(transformedListDesc):
 #            categorizer_wins += 1
 #        elif sum(transformedListCats) < sum(transformedListDesc):
@@ -269,8 +292,15 @@ def agreement_calculation(threshold = 0.5,
         if number_of_included_urls >= considerTopXUrls:
             break
 
-    print "Describer-Wins: %s Categorizer-Wins: %s Ties: %s" % (describer_wins, categorizer_wins, ties)
+    pickle.dump(cat_url_to_occ_and_tagfreq, open('cat_url_to_tagFreq','w'))
+    pickle.dump(desc_url_to_occ_and_tagfreq, open('desc_url_to_tagFreq','w'))
+
+    calculateWinnings(cat_url_to_occ_and_tagfreq, desc_url_to_occ_and_tagfreq, 0.5)
+
+    # IPython.embed()
+
+    #print "Describer-Wins: %s Categorizer-Wins: %s Ties: %s" % (describer_wins, categorizer_wins, ties)
     
 
 if __name__ == "__main__":
-    agreement_calculation(0.5514, considerTopXUrls=500, winningTreshold = 0.6)
+    agreement_calculation(0.5514, considerTopXUrls=500, winningTreshold = 0.6, taggers_to_inspect=5)
