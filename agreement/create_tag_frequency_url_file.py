@@ -146,7 +146,7 @@ def calculateWinnings(describer_dict, categorizer_dict, winningThreshold = 0.5):
 
         transformed_categorizer_list = transformList(categorizer_dict[key][1], winningThreshold)
 
-        print sum(transformed_describer_list) + " " + sum(transformed_categorizer_list)
+        print "%s %s" % (sum(transformed_describer_list), sum(transformed_categorizer_list))
 
         
 
