@@ -12,7 +12,7 @@ IMPORTANT: Each user can annotate each document only once with a tag
 
 __author__ = 'Christian Körner'
 
-from tagging.Tagger import Tagger
+import tagging.Tagger
 
 
 
@@ -52,7 +52,7 @@ def tagger_analysis(hasHeader = False, analysis_function = None, user_limit = No
         tag = line[args.t]
 
         if old_user != "" and user != old_user:
-            tagger = Tagger(old_user, tas_list)
+            tagger = tagging.Tagger.Tagger(old_user, tas_list)
 
             if analysis_function is not None:
                 analysis_function(tagger)
@@ -72,7 +72,7 @@ def tagger_analysis(hasHeader = False, analysis_function = None, user_limit = No
 
         old_user = user
 
-    tagger = Tagger(old_user, tas_list)
+    tagger = tagging.Tagger.Tagger(old_user, tas_list)
 
     if analysis_function is not None:
         analysis_function(tagger)
