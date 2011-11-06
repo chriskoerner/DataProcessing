@@ -102,7 +102,9 @@ if __name__ == '__main__':
     tas_list = [("google.com", "search"), ("google.com", "player")]
 
     TAGGER.add_tas(tas_list)
+    TAGGER.add_tas([("yahoo","search"), ("msn" , "search")])
 
     print "tags:", TAGGER.get_tags()
     print "resources:", TAGGER.get_resources()
+    print TAGGER.get_tags_and_occurrences()
     print TAGGER.get_tas_number()

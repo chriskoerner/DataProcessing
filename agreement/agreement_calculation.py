@@ -132,7 +132,7 @@ def transformList(the_list, threshold):
 
 def calculateWinnings(describer_dict, categorizer_dict, winningThreshold = 0.5):
     """
-
+    calculates the winnings
     """
     if set(describer_dict.keys()) != set(categorizer_dict.keys()):
         sys.exit("The dicts do not contain the same keys")
@@ -147,6 +147,15 @@ def calculateWinnings(describer_dict, categorizer_dict, winningThreshold = 0.5):
         transformed_categorizer_list = transformList(categorizer_dict[key][1], winningThreshold)
 
         print "%s %s" % (sum(transformed_describer_list), sum(transformed_categorizer_list))
+
+        if sum(transformed_describer_list) > sum(transformed_categorizer_list):
+            desc_wins += 1
+        elif sum(transformed_describer_list) < sum(transformed_categorizer_list):
+            cat_wins += 1
+        else:
+            ties += 1
+
+    return {"cat_wins":cat_wins, "describer_wins":desc_wins,"ties":ties}
 
         
 
@@ -295,12 +304,12 @@ def agreement_calculation(threshold = 0.5,
     pickle.dump(cat_url_to_occ_and_tagfreq, open('cat_url_to_tagFreq','w'))
     pickle.dump(desc_url_to_occ_and_tagfreq, open('desc_url_to_tagFreq','w'))
 
-    calculateWinnings(cat_url_to_occ_and_tagfreq, desc_url_to_occ_and_tagfreq, 0.5)
+    print calculateWinnings(desc_url_to_occ_and_tagfreq, cat_url_to_occ_and_tagfreq, 0.7)
 
-    # IPython.embed()
+    IPython.embed()
 
     #print "Describer-Wins: %s Categorizer-Wins: %s Ties: %s" % (describer_wins, categorizer_wins, ties)
     
 
 if __name__ == "__main__":
-    agreement_calculation(0.5514, considerTopXUrls=500, winningTreshold = 0.6, taggers_to_inspect=5)
+    agreement_calculation(0.5514, considerTopXUrls=1000, winningTreshold = 0.6, taggers_to_inspect=10000000)
