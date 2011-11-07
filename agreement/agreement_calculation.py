@@ -20,6 +20,8 @@ import pickle
 import IPython
 
 
+
+
 import os.path
 
 
@@ -27,6 +29,12 @@ FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
 logger = logging.getLogger('agreement_calculation')
 logger.setLevel(logging.INFO)
+
+def drange(start, stop, step):
+    r = start
+    while r < stop:
+            yield r
+            r += step
 
 
 class AgreementCalculator():
@@ -130,6 +138,16 @@ def transformList(the_list, threshold):
 
     return result_list
 
+def calculateWinningsPickled(describer_file, categorizer_file, winningTreshold = 0.5):
+    """
+    loads pickled stuff
+    """
+
+    desc_dict = pickle.load(open(describer_file, "r"))
+    cat_dict = pickle.load(open(categorizer_file, "r"))
+
+    return calculateWinnings(desc_dict, cat_dict, winningTreshold)
+
 def calculateWinnings(describer_dict, categorizer_dict, winningThreshold = 0.5):
     """
     calculates the winnings
@@ -146,7 +164,7 @@ def calculateWinnings(describer_dict, categorizer_dict, winningThreshold = 0.5):
 
         transformed_categorizer_list = transformList(categorizer_dict[key][1], winningThreshold)
 
-        print "%s %s" % (sum(transformed_describer_list), sum(transformed_categorizer_list))
+        #print "%s %s" % (sum(transformed_describer_list), sum(transformed_categorizer_list))
 
         if sum(transformed_describer_list) > sum(transformed_categorizer_list):
             desc_wins += 1
@@ -312,4 +330,4 @@ def agreement_calculation(threshold = 0.5,
     
 
 if __name__ == "__main__":
-    agreement_calculation(0.5514, considerTopXUrls=1000, winningTreshold = 0.6, taggers_to_inspect=10000000)
+    agreement_calculation(0.5514, considerTopXUrls=500, winningTreshold = 0.6, taggers_to_inspect=10000000)
