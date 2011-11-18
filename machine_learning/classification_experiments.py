@@ -1,46 +1,91 @@
+"""
+a simple classification script
+
+needs libsvm files as input
+"""
+import argparse
+import os
+
 from sklearn.datasets import load_svmlight_file
 from sklearn import preprocessing
 from sklearn import svm, metrics
 from sklearn import cross_validation
+from sklearn.metrics import confusion_matrix
 
-#import numpy
+import pylab as plt
+import sys
 
-################################################################################
-# Data IO and generation
+def drange(start, stop, step):
+    """
+    range for floats
+    """
+    r = start
+    while r < stop:
+            yield r
+            r += step
 
-# import some data to play with
+parser = argparse.ArgumentParser(description='Program to do some simple SVM experiments')
+parser.add_argument("libsvm_file", type=str)
 
-#X, y = load_svmlight_file("/Users/chris/Dropbox/Experiment/SVM_Experiments/learn_discipline/data_to_learn_discipline_k=5")
+args = parser.parse_args()
 
-X, y = load_svmlight_file(
-     "/Users/chris/Dropbox/Experiment/SVM_Experiments/learn_academic_status/specialist_svm")
+print args
 
-skf = cross_validation.StratifiedKFold(y, 10, indices=True)
+if args.libsvm_file is None:
+    parser.print_help()
+
+    sys.exit(-1)
+
+print args.libsvm_file
+
+X, y = load_svmlight_file(args.libsvm_file)
 
 
 
-clf = svm.sparse.SVC(kernel = 'linear')
 
 
-precisions = []
-recalls = []
-f1scores = []
 
-for train_index, test_index in skf:
-    X_train, X_test = X[train_index], X[test_index]
-    y_train, y_test = y[train_index], y[test_index]
+for x in drange(0.1, 1.0, 0.1):
+    precisions = []
+    recalls = []
+    f1scores = []
 
-    X_train = preprocessing.normalize(X_train)
-    X_test = preprocessing.normalize(X_test)
+    clf = svm.sparse.SVC(C = x, kernel = 'linear')
 
-    cv = clf.fit(X_train, y_train)
+    skf = cross_validation.StratifiedKFold(y, 10, indices=True)
 
-    prediction = clf.predict(X_test)
+    fold = 0
+    
+    for train_index, test_index in skf:
+        fold += 1
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
 
-    f1scores.append(metrics.f1_score(prediction, y_test))
-    precisions.append(metrics.precision_score(prediction, y_test))
-    recalls.append(metrics.recall_score(prediction, y_test))
+        X_train = preprocessing.normalize(X_train)
+        X_test = preprocessing.normalize(X_test)
 
-print "avg f1 score: %s" % (sum(f1scores)/ len(f1scores))
-print "avg precision score: %s" % (sum(precisions)/ len(f1scores))
-print "avg recall score: %s" % (sum(recalls)/ len(f1scores))
+        cv = clf.fit(X_train, y_train)
+
+        prediction = clf.predict(X_test)
+
+        cm = confusion_matrix(prediction, y_test)
+
+        plt.matshow(cm)
+        plt.title('Confusion matrix')
+        plt.colorbar()
+
+        if not os.path.isdir("out"):
+            os.mkdir("out")
+
+        plt.savefig("out/confusion_matrix_" + str(fold) + "_C_" + str(x) + ".pdf")
+
+        f1scores.append(metrics.f1_score(prediction, y_test))
+        precisions.append(metrics.precision_score(prediction, y_test))
+        recalls.append(metrics.recall_score(prediction, y_test))
+
+    print "-------------------------"
+    print "C paramenter: %s" % x
+    print "avg f1 score: %s" % (sum(f1scores)/ len(f1scores))
+    print "avg precision score: %s" % (sum(precisions)/ len(f1scores))
+    print "avg recall score: %s" % (sum(recalls)/ len(f1scores))
+    print "-------------------------"
