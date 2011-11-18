@@ -31,6 +31,9 @@ logger = logging.getLogger('agreement_calculation')
 logger.setLevel(logging.INFO)
 
 def drange(start, stop, step):
+    """
+    range for floats
+    """
     r = start
     while r < stop:
             yield r
@@ -42,11 +45,10 @@ class AgreementCalculator():
     Agreement calculator class
     """
 
-    def __init__(self, t = 0.5):
+    def __init__(self):
         """
-        
+        constructor
         """
-        self.threshold = t
         self.url_frequency_counter = Counter()
 
         self.categorizer_url_tag_counter_dict = {}
@@ -227,7 +229,10 @@ def agreement_calculation(threshold = 0.5,
 
     tagger_measure_lookup = {}
 
-    for line in csv.reader(open("../data/cat_desc/delicious_statistics_name_and_combined.csv"), delimiter = '\t'):
+    measure_file = "../data/cat_desc/delicious_statistics_name_and_combined.csv"
+    #measure_file = "../data/cat_desc/citeUlike_name_and_combined.csv"
+
+    for line in csv.reader(open(measure_file), delimiter = '\t'):
         tagger_measure_lookup[line[0]] = float(line[1])
 
     behavior_counter = Counter()
@@ -288,16 +293,24 @@ def agreement_calculation(threshold = 0.5,
 #        transformedListCats = transformList([float(x) / agr_calculator.categorizer_url_freq_counter[url] for x
 #                                             in agr_calculator.categorizer_url_tag_counter_dict[url].values() ], winningTreshold)
 
+
+        #filter occs with 1
+        cat_tag_frequency = agr_calculator.categorizer_url_tag_counter_dict[url].values()
+        cat_filtered_frequency = filter (lambda a: a > 2, cat_tag_frequency)
+
         cat_url_to_occ_and_tagfreq[url] = (agr_calculator.categorizer_url_freq_counter[url],
                                            [float(x) / agr_calculator.categorizer_url_freq_counter[url] for x
-                                             in agr_calculator.categorizer_url_tag_counter_dict[url].values() ])
+                                             in cat_filtered_frequency])
 
 #        transformedListDesc = transformList([float(x) / agr_calculator.describer_url_freq_counter[url] for x
 #                                             in agr_calculator.describer_url_tag_counter_dict[url].values() ], winningTreshold)
+        #filter occs with 1
+        desc_tag_frequency = agr_calculator.categorizer_url_tag_counter_dict[url].values()
+        desc_filtered_frequency = filter (lambda a: a > 2, cat_tag_frequency)
 
         desc_url_to_occ_and_tagfreq[url] = (agr_calculator.describer_url_freq_counter[url],
                                             [float(x) / agr_calculator.describer_url_freq_counter[url] for x
-                                             in agr_calculator.describer_url_tag_counter_dict[url].values() ])
+                                             in desc_filtered_frequency])
 
         
 #        if sum(transformedListCats) > sum(transformedListDesc):
@@ -319,8 +332,8 @@ def agreement_calculation(threshold = 0.5,
         if number_of_included_urls >= considerTopXUrls:
             break
 
-    pickle.dump(cat_url_to_occ_and_tagfreq, open('cat_url_to_tagFreq','w'))
-    pickle.dump(desc_url_to_occ_and_tagfreq, open('desc_url_to_tagFreq','w'))
+    pickle.dump(cat_url_to_occ_and_tagfreq, open('delicious_cat_url_to_tagFreq','w'))
+    pickle.dump(desc_url_to_occ_and_tagfreq, open('delicious_desc_url_to_tagFreq','w'))
 
     print calculateWinnings(desc_url_to_occ_and_tagfreq, cat_url_to_occ_and_tagfreq, 0.7)
 
@@ -330,4 +343,6 @@ def agreement_calculation(threshold = 0.5,
     
 
 if __name__ == "__main__":
+    #0.5514 for delcicous
+    #0.6939 for citeulike
     agreement_calculation(0.5514, considerTopXUrls=500, winningTreshold = 0.6, taggers_to_inspect=10000000)

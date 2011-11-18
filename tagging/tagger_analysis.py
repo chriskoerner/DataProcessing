@@ -14,12 +14,11 @@ __author__ = 'Christian Körner'
 
 import tagging.Tagger
 
-
-
 import argparse
 import csv
 import logging
 import json
+import tagger_measures
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -77,8 +76,10 @@ def tagger_analysis(hasHeader = False, analysis_function = None, user_limit = No
     if analysis_function is not None:
         analysis_function(tagger)
     else:
-        print tagger.name + "\t" + json.dumps(tagger.get_tags_and_occurrences()) + "\t" + str(len(tagger.get_resources()))\
-            + "\t" + str(len(tagger.get_tags()))
+        print "%s	%s	%s	%s  %s" % (
+            tagger.name, json.dumps(tagger.get_tags_and_occurrences()), len(tagger.get_resources()),
+            len(tagger.get_tags()),
+            tagger_measures.calculate_combined())
 
 
     args.folksonomy_file.close()
